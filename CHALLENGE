@@ -1,0 +1,20 @@
+Desafio:
+
+Escreva um crawler que visite o site epocacosmeticos.com.br e salve um arquivo .csv com o nome do
+produto, o título e a url de cada página de produto* encontrada; esse arquivo não deve conter
+entradas duplicadas.
+
+Você pode usar os frameworks e bibliotecas que quiser. Publique o código em algum lugar público
+(Github, Bitbucket etc.) contendo um README explicando como instalar e rodar o programa.
+
+* Uma página de produto é a que contém as informações (nome, preço, disponibilidade, descrição
+, etc.) de apenas um produto. Home page, páginas de busca ou categoria não são consideradas páginas
+de produto.
+
+Exemplo:
+
+    É página de produto ->
+    http://www.epocacosmeticos.com.br/hypnose-eau-de-toilette-lancome-perfume-feminino/p
+
+    Não é página de produto -> 
+    http://www.epocacosmeticos.com.br/cabelos
