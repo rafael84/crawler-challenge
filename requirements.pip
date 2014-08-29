@@ -1,0 +1,8 @@
+cssselect==0.9.1
+gevent==1.0.1
+gnureadline==6.3.3
+greenlet==0.4.3
+ipdb==0.8
+ipython==2.2.0
+lxml==3.3.6
+wsgiref==0.1.2
