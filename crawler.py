@@ -1,20 +1,26 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import sys
 import re
 import logging
-import requests
-from pprint import pprint
+import codecs
 
+import requests
 from BeautifulSoup import BeautifulStoneSoup as Soup
 
 
 logging.basicConfig(
     format='%(asctime)s %(name)s %(levelname)s %(message)s',
-    level=logging.WARNING
+    level=logging.INFO,
+    filename='info.log'
 )
 
 ROOT_URL = 'http://epocacosmeticos.com.br/sitemap.xml'
 PRODUCTS_REGEX = re.compile(r'sitemap-produtos.*\.xml')
 PRODUCT_NAME_REGEX = re.compile(r'\bproductName\b')
+
+CSV_HEADERS = u'product_name,page_title,page_url\n'
+CSV_FORMAT = u'"%(product_name)s","%(page_title)s","%(page_url)s"\n'
 
 
 def make_request(url, allow_redirects=False):
@@ -67,13 +73,18 @@ def main():
     response = make_request(ROOT_URL, True)
     product_sitemaps = extract_product_sitemaps(response)
 
-    for sitemap_url in product_sitemaps:
-        for product_url in extract_product_urls(sitemap_url):
-            data = grab_product_details(product_url)
-            pprint(data)
+    with codecs.open('output.csv', 'w', 'utf-8') as csv:
+        csv.write(CSV_HEADERS)
+        for sitemap_url in product_sitemaps:
+            for product_url in extract_product_urls(sitemap_url):
+                data = grab_product_details(product_url)
+                if data:
+                    csv.write(CSV_FORMAT % data)
 
     logging.info('crawler finished')
 
 
 if __name__ == '__main__':
+    reload(sys)
+    sys.setdefaultencoding("utf-8")
     main()
