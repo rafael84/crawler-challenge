@@ -31,4 +31,6 @@ means that we play nicely with the website, as we only make one request at a tim
 
 ### How to run the program
 
-    ./crawler.py 
+    ./solution_two.py 
+
+The output csv file will be saved as `data/solution_two.csv`.
