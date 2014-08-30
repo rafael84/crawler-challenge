@@ -1,8 +1,6 @@
-crawler-challenge
-=================
+# crawler-challenge
 
-The Problem
------------
+## The Problem
 
 Write a crawler that visits the web site epocacosmeticos.com.br and save into a .csv file the name
 of the product, the page title and the page url for each product page[1] found; this file must
@@ -21,8 +19,7 @@ This is a product page:
 But this is not a product page:
     http://www.epocacosmeticos.com.br/cabelos
 
-The Solution
-------------
+## Solution Two
 
 This is a quite simple solution, based on sitemaps.
 
@@ -32,9 +29,6 @@ ran for the first time.
 The program runs sequentially, which leads to a very poor performance. On the other hand, this
 means that we play nicely with the website, as we only make one request at a time.
 
-How to run the program
-----------------------
+### How to run the program
 
     ./crawler.py 
-
-981.06s user 8.80s system 15% cpu 1:49:45.29 total
