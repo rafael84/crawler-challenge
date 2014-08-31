@@ -33,12 +33,12 @@ SOLUTION_NAME = os.path.splitext(os.path.basename(__file__))[0]
 # define the allowed domain to follow links
 ALLOWED_DOMAIN = 'epocacosmeticos.com.br'
 
-# define a blacklist
+# define a blacklist of url patterns, established empirically
 BLACKLIST_REGEX = re.compile(
     r'('
-    r'\?PS\=20\&map'
-    r'|checkout\/cart\/add'
-    r'|^mailto\:'
+    r'\?PS\=20\&map'         # urls ignored by this rule: 200k+
+    r'|checkout\/cart\/add'  # urls ignored by this rule: ~8k
+    r'|^mailto\:'            # ignore the mailto scheme
     r')'
 )
 
