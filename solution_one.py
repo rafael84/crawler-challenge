@@ -106,14 +106,27 @@ csv.write(CSV_HEADERS)
 
 # ---------------------------------------
 
+# keeps track of urls to be visited
 queue = gevent.queue.JoinableQueue()
+
+# a set of urls to avoid visiting each discovered url more than one time
 discovered = set()
+
+# a list of urls already visited; for statistical purposes only
 visited = []
 
 # ---------------------------------------
 
 
 def can_visit_link(url):
+    """ returns True when the given url can be accessed by the crawler
+
+    The logic takes into account four simple rules:
+    1. the url must be new, so we don't visit the same url twice
+    2. external urls never are visited
+    3. it must be allowed in accordance to the robots.txt file
+    4. it can't match the blacklist regex
+    """
     return (url not in discovered) \
         and (ALLOWED_DOMAIN in url) \
         and RERP.is_allowed('*', url) \
@@ -121,6 +134,15 @@ def can_visit_link(url):
 
 
 def discover_links(url, soup):
+    """ find new urls to be visited by the crawler
+
+    urls starting with hashtag (#) are completely ignored, for instance:
+
+        <a href="#top">Top</a>
+
+    in the example above, the url extracted is "#top", which is just an
+    anchor to some location within the same page
+    """
     logger.info('discovering links for [%s]' % url)
     anchors = soup.findAll('a', href=True)
     for anchor in anchors:
@@ -151,11 +173,30 @@ def extract_product_data(url, soup):
 
 
 def is_valid_product_page(url, response):
+    """ checks whether the given url actually leads to the page with product
+    details
+
+    the website redirects the user to a Product Not Found page, and that's why
+    we make sure the current url in response doesn't contain
+    'ProductLinkNotFound'
+    """
     return PRODUCT_PAGE_REGEX.match(url) and \
         'ProductLinkNotFound' not in response.url
 
 
 def crawler(n):
+    """ this is the worker routine, the heart of this solution
+
+    the job is performed by the following steps:
+    1. take an url from the queue
+    2. make a request to this url
+    3. mark it as visited
+    4. check whether the response is ok to be parsed
+    5. if the url corresponds to a product page, then extract data from it
+    6. extract more urls from the current page and add them to the queue
+
+    this is repeated continuously until the queue is empty
+    """
     while True:
         logger.info(
             'links: [%d] pending, [%d] discovered, [%d] visited'
@@ -176,14 +217,17 @@ def crawler(n):
         queue.task_done()
 
 
+# start the crawler workers
 for n in xrange(MAX_WORKERS):
     gevent.spawn(crawler, n)
 
 
+# start by visiting the initial url
 queue.put(INITIAL_URL)
 discovered.add(INITIAL_URL)
 visited.append(INITIAL_URL)
 
+# wait until the queue is empty and all workers have completed their job
 queue.join()
 
 # close the output file
