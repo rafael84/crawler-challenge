@@ -225,7 +225,6 @@ for n in xrange(MAX_WORKERS):
 # start by visiting the initial url
 queue.put(INITIAL_URL)
 discovered.add(INITIAL_URL)
-visited.append(INITIAL_URL)
 
 # wait until the queue is empty and all workers have completed their job
 queue.join()
