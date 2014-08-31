@@ -23,7 +23,7 @@ import requests
 # beautifulsoup
 from BeautifulSoup import BeautifulStoneSoup as Soup
 
-#
+# robot exclusion rules parser
 from robotexclusionrulesparser import RobotExclusionRulesParser
 
 # take the script filename without the extension so we can properly name files
