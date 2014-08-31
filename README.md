@@ -49,11 +49,13 @@ product pages, the work is done by green (fake) threads - Greenlet, managed by
 the Gevent library. So, the program uses a lightweight concurrency model.
 
 The job is performed by the following steps:
+
 1. take an url from the queue
 2. make a request to this url
 3. mark it as visited
 4. check whether the response is ok to be parsed
-5. if the url corresponds to a product page, then extract data from it
+5. if the url corresponds to a product page, then extract data from it and save
+   the data in the csv file
 6. extract more urls from the current page and add them to the queue
 
 This is repeated continuously until the queue is empty.
@@ -77,6 +79,14 @@ links when crawler ran for the first time, though.
 The program runs sequentially, which leads to a very poor performance. On the
 other hand, this means that we play nicely with the website, as we only make one
 request at a time.
+
+The logic then is pretty straightforward:
+
+1. open the output filename
+2. get the root sitemap
+3. get the product sitemaps from the root sitemap
+4. access each product url and take the required data from it, saving the data
+   on the output file
 
 ### How to run this solution
 
