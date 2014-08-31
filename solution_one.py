@@ -31,6 +31,15 @@ SOLUTION_NAME = os.path.splitext(os.path.basename(__file__))[0]
 # define the allowed domain to follow links
 ALLOWED_DOMAIN = 'epocacosmeticos.com.br'
 
+# define a blacklist
+BLACKLIST_REGEX = re.compile(
+    r'('
+    r'\?PS\=20\&map'
+    r'|checkout\/cart\/add'
+    r'|^mailto\:'
+    r')'
+)
+
 # the base url applied to relative links
 BASE_URL = 'http://%s' % ALLOWED_DOMAIN
 
@@ -82,8 +91,8 @@ reload(sys)
 sys.setdefaultencoding("utf-8")
 
 # load robot rules
-rerp = robotexclusionrulesparser.RobotExclusionRulesParser()
-rerp.fetch(urlparse.urljoin(BASE_URL, '/robots.txt'))
+RERP = robotexclusionrulesparser.RobotExclusionRulesParser()
+RERP.fetch(urlparse.urljoin(BASE_URL, '/robots.txt'))
 
 # open the output file
 csv = codecs.open(CSV_FILENAME, 'w', 'utf-8')
@@ -101,7 +110,8 @@ visited = []
 def can_visit_link(url):
     return (url not in discovered) \
         and (ALLOWED_DOMAIN in url) \
-        and rerp.is_allowed('*', url)
+        and RERP.is_allowed('*', url) \
+        and not BLACKLIST_REGEX.search(url)
 
 
 def discover_links(url, soup):
