@@ -8,7 +8,6 @@ import logging
 import re
 import codecs
 import urlparse
-import robotexclusionrulesparser
 
 # gevent
 import gevent
@@ -23,6 +22,9 @@ import requests
 
 # beautifulsoup
 from BeautifulSoup import BeautifulStoneSoup as Soup
+
+#
+from robotexclusionrulesparser import RobotExclusionRulesParser
 
 # take the script filename without the extension so we can properly name files
 # produced by this solution
@@ -91,8 +93,12 @@ reload(sys)
 sys.setdefaultencoding("utf-8")
 
 # load robot rules
-RERP = robotexclusionrulesparser.RobotExclusionRulesParser()
-RERP.fetch(urlparse.urljoin(BASE_URL, '/robots.txt'))
+RERP = RobotExclusionRulesParser()
+try:
+    RERP.fetch(urlparse.urljoin(BASE_URL, '/robots.txt'))
+except:
+    RERP.parse(open('robots.txt', 'r').read())
+
 
 # open the output file
 csv = codecs.open(CSV_FILENAME, 'w', 'utf-8')
