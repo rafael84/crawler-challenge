@@ -69,13 +69,6 @@ CSV_FORMAT = u'"%(product_name)s","%(page_title)s","%(page_url)s"\n'
 MAX_WORKERS = 10
 
 
-# make sure the required directories exists
-if not os.path.exists('data'):
-    os.makedirs('data')
-if not os.path.exists('logs'):
-    os.makedirs('logs')
-
-
 # configure the logging
 logging.basicConfig(
     format='%(asctime)s %(name)s %(levelname)s %(message)s',
@@ -84,38 +77,17 @@ logging.basicConfig(
 )
 logger = logging.getLogger(SOLUTION_NAME)
 
-# ---------------------------------------
-
-logger.info('crawler has been started')
-
-# prevent some encoding problems
-reload(sys)
-sys.setdefaultencoding("utf-8")
-
-# load robot rules
-RERP = RobotExclusionRulesParser()
-try:
-    RERP.fetch(urlparse.urljoin(BASE_URL, '/robots.txt'))
-except:
-    RERP.parse(open('robots.txt', 'r').read())
-
-
-# open the output file
-csv = codecs.open(CSV_FILENAME, 'w', 'utf-8')
-csv.write(CSV_HEADERS)
 
 # ---------------------------------------
 
-# keeps track of urls to be visited
-queue = gevent.queue.JoinableQueue()
 
-# a set of urls to avoid visiting each discovered url more than one time
-discovered = set()
-
-# a list of urls already visited; for statistical purposes only
-visited = []
-
-# ---------------------------------------
+def create_required_dirs():
+    """ make sure the required directories exists
+    """
+    if not os.path.exists('data'):
+        os.makedirs('data')
+    if not os.path.exists('logs'):
+        os.makedirs('logs')
 
 
 def can_visit_link(url):
@@ -217,19 +189,58 @@ def crawler(n):
         queue.task_done()
 
 
-# start the crawler workers
-for n in xrange(MAX_WORKERS):
-    gevent.spawn(crawler, n)
+def load_robot_rules():
+    """ load rules from the robots.txt
+
+    if the online online version is not accessible, then the local version is
+    loaded from disk
+    """
+    rerp = RobotExclusionRulesParser()
+    try:
+        rerp.fetch(urlparse.urljoin(BASE_URL, '/robots.txt'))
+    except:
+        rerp.parse(open('robots.txt', 'r').read())
+    return rerp
 
 
-# start by visiting the initial url
-queue.put(INITIAL_URL)
-discovered.add(INITIAL_URL)
+if __name__ == '__main__':
 
-# wait until the queue is empty and all workers have completed their job
-queue.join()
+    logger.info('crawler has been started')
 
-# close the output file
-csv.close()
+    create_required_dirs()
 
-logger.info('crawler finished')
+    # prevent some encoding problems
+    reload(sys)
+    sys.setdefaultencoding("utf-8")
+
+    # load robot rules
+    RERP = load_robot_rules()
+
+    # open the output file
+    csv = codecs.open(CSV_FILENAME, 'w', 'utf-8')
+    csv.write(CSV_HEADERS)
+
+    # keeps track of urls to be visited
+    queue = gevent.queue.JoinableQueue()
+
+    # a set of urls to avoid visiting each discovered url more than one time
+    discovered = set()
+
+    # a list of urls already visited; for statistical purposes only
+    visited = []
+
+    # start the crawler workers
+    for n in xrange(MAX_WORKERS):
+        gevent.spawn(crawler, n)
+
+    # start by visiting the initial url
+    queue.put(INITIAL_URL)
+    discovered.add(INITIAL_URL)
+
+    # wait until the queue is empty and all workers have completed their job
+    queue.join()
+
+    # close the output file
+    csv.close()
+
+    logger.info('crawler finished')
