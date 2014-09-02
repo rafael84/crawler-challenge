@@ -30,9 +30,9 @@ with older versions nor the 3.x.
 After you have cloned this repository, cd into it and then perform the following
 commands:
 
-    virtualenv venv
-    source venv/bin/activate
-    pip install -r requirements.pip
+    $ virtualenv venv
+    $ source venv/bin/activate
+    $ pip install -r requirements.pip
 
 
 ## Solution One
@@ -63,11 +63,38 @@ This is repeated continuously until the queue is empty.
 
 ### How to run this solution
 
-    ./solution_one.py 
+    $ ./solution_one.py 
 
 The output csv file will be saved as `data/solution_one.csv`, and the logs can
 be found at `logs/solution_one.log`.
 
+
+### How to test this solution
+
+There are a couple of tests implemented for functions `can_visit_link` and
+`discover_links`. To execute the tests, simply run this command:
+
+    $ ./test_solution_one.py -v
+
+The `-v` is optional.
+
+The output should be something like this:
+
+    $ ./test_solution_one.py -v
+
+    test_should_check_the_black_list (__main__.TestCanVisitLink) ... ok
+    test_should_not_allow_external_links (__main__.TestCanVisitLink) ... ok
+    test_should_not_allow_the_same_url_twice (__main__.TestCanVisitLink) ... ok
+    test_should_respect_the_robots_txt_rules (__main__.TestCanVisitLink) ... ok
+    test_should_add_allowed_urls_to_queue_and_discovered (__main__.TestDiscoverLinks) ... ok
+    test_should_ignore_links_starting_with_hashtag (__main__.TestDiscoverLinks) ... ok
+    test_should_ignore_links_without_href (__main__.TestDiscoverLinks) ... ok
+    test_should_treat_relative_links_properly (__main__.TestDiscoverLinks) ... ok
+
+    ----------------------------------------------------------------------
+    Ran 8 tests in 0.007s
+
+    OK
 
 ## Solution Two
 
@@ -90,7 +117,7 @@ The logic then is pretty straightforward:
 
 ### How to run this solution
 
-    ./solution_two.py 
+    $ ./solution_two.py 
 
 The output csv file will be saved as `data/solution_two.csv`, and the logs can
 be found at `logs/solution_two.log`.
