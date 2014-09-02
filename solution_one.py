@@ -15,7 +15,7 @@ import gevent.queue
 
 # gevent monkey patching
 from gevent import monkey
-monkey.patch_socket()
+monkey.patch_all()
 
 # requests
 import requests
